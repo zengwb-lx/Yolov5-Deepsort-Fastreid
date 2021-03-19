@@ -1,0 +1,8 @@
+tqdm
+numpy>=1.18.1
+scipy
+sklearn
+infomap
+faiss-gpu
+torch>=1.2
+torchvision

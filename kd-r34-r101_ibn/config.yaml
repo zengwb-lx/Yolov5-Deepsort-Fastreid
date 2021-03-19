@@ -1,0 +1,157 @@
+CUDNN_BENCHMARK: true
+DATALOADER:
+  NAIVE_WAY: true
+  NUM_INSTANCE: 16
+  NUM_WORKERS: 8
+  PK_SAMPLER: true
+DATASETS:
+  COMBINEALL: false
+  NAMES:
+  - DukeMTMC
+  TESTS:
+  - DukeMTMC
+INPUT:
+  AUGMIX_PROB: 0.0
+  AUTOAUG_PROB: 0.1
+  CJ:
+    BRIGHTNESS: 0.15
+    CONTRAST: 0.15
+    ENABLED: false
+    HUE: 0.1
+    PROB: 0.5
+    SATURATION: 0.1
+  DO_AFFINE: false
+  DO_AUGMIX: false
+  DO_AUTOAUG: true
+  DO_FLIP: true
+  DO_PAD: true
+  FLIP_PROB: 0.5
+  PADDING: 10
+  PADDING_MODE: constant
+  REA:
+    ENABLED: true
+    PROB: 0.5
+    VALUE:
+    - 123.675
+    - 116.28
+    - 103.53
+  RPT:
+    ENABLED: false
+    PROB: 0.5
+  SIZE_TEST:
+  - 256
+  - 128
+  SIZE_TRAIN:
+  - 256
+  - 128
+KD:
+  MODEL_CONFIG: ../logs/r101_ibn_19w/config.yaml
+  MODEL_WEIGHTS: ../logs/r101_ibn_19w/model_best.pth
+MODEL:
+  BACKBONE:
+    DEPTH: 34x
+    FEAT_DIM: 512
+    LAST_STRIDE: 1
+    NAME: build_resnet_backbone_distill
+    NORM: BN
+    PRETRAIN: false
+    PRETRAIN_PATH: ''
+    WITH_IBN: false
+    WITH_NL: false
+    WITH_SE: false
+  DEVICE: cuda
+  FREEZE_LAYERS:
+  - backbone
+  HEADS:
+    CLS_LAYER: circleSoftmax
+    EMBEDDING_DIM: 0
+    MARGIN: 0.35
+    NAME: EmbeddingHead
+    NECK_FEAT: after
+    NORM: BN
+    NUM_CLASSES: 7360
+    POOL_LAYER: gempoolP
+    SCALE: 64
+    WITH_BNNECK: true
+  LOSSES:
+    CE:
+      ALPHA: 0.2
+      EPSILON: 0.1
+      SCALE: 1.0
+    CIRCLE:
+      GAMMA: 128
+      MARGIN: 0.25
+      SCALE: 1.0
+    COSFACE:
+      GAMMA: 128
+      MARGIN: 0.25
+      SCALE: 1.0
+    FL:
+      ALPHA: 0.25
+      GAMMA: 2
+      SCALE: 1.0
+    NAME:
+    - CrossEntropyLoss
+    - TripletLoss
+    TRI:
+      HARD_MINING: true
+      MARGIN: 0.0
+      NORM_FEAT: false
+      SCALE: 1.0
+  META_ARCHITECTURE: DistillerOverhaul
+  PIXEL_MEAN:
+  - 123.675
+  - 116.28
+  - 103.53
+  PIXEL_STD:
+  - 58.395
+  - 57.120000000000005
+  - 57.375
+  QUEUE_SIZE: 8192
+  WEIGHTS: projects/FastDistill/logs/dukemtmc/kd-r34-r101_ibn/model_final.pth
+OUTPUT_DIR: projects/FastDistill/logs/dukemtmc/kd-r34-r101_ibn
+SOLVER:
+  BASE_LR: 0.0004
+  BIAS_LR_FACTOR: 1.0
+  CHECKPOINT_PERIOD: 5
+  DELAY_EPOCHS: 5
+  ETA_MIN_LR: 7.0e-07
+  FP16_ENABLED: true
+  FREEZE_FC_ITERS: 0
+  FREEZE_ITERS: 1000
+  GAMMA: 0.1
+  HEADS_LR_FACTOR: 1.0
+  IMS_PER_BATCH: 256
+  MAX_EPOCH: 60
+  MOMENTUM: 0.9
+  NESTEROV: true
+  OPT: Adam
+  SCHED: CosineAnnealingLR
+  STEPS:
+  - 40
+  - 90
+  WARMUP_EPOCHS: 5
+  WARMUP_FACTOR: 0.1
+  WARMUP_METHOD: linear
+  WEIGHT_DECAY: 0.0005
+  WEIGHT_DECAY_BIAS: 0.0005
+TEST:
+  AQE:
+    ALPHA: 3.0
+    ENABLED: false
+    QE_K: 5
+    QE_TIME: 1
+  EVAL_PERIOD: 5
+  FLIP_ENABLED: false
+  IMS_PER_BATCH: 128
+  METRIC: cosine
+  PRECISE_BN:
+    DATASET: Market1501
+    ENABLED: false
+    NUM_ITER: 300
+  RERANK:
+    ENABLED: false
+    K1: 20
+    K2: 6
+    LAMBDA: 0.3
+  ROC_ENABLED: false
